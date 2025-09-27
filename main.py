@@ -1,31 +1,33 @@
-a,b = map(int, input().split())
-
-c = b
+a, b = map(int, input().split())
 
 d = {}
-mas = set()
-for i in range(c):
-    x, y = map(int, input().split())
-    if x == y:
-        b = 0
-    mas.add(x)
-    if x in d:
-        d[x].append(y)
-    else:
-        d[x] = [y]
+for i in range(1, a + 1):
+    d[i] = set()
 
-if b != 0:
-    c = mas.pop()
-    a = d[c]
-    for i in d:
-        if d[i] != a:
-            print(-1)
-            break
-    else:
-        mas.add(c)
-        if len(mas) != len(d[c]):
-            print(-1)
+
+for i in range(b):
+    x, y = map(int, input().split())
+    d[x].add(y)
+
+groups = {}
+for vertex, neighbors in d.items():
+    key = tuple(sorted(neighbors))
+    if key not in groups:
+        groups[key] = []
+    groups[key].append(vertex)
+
+
+if len(groups) == 2:
+    group1, group2 = groups.values()
+
+
+    if len(group1) == len(group2):
+        expected_edges = len(group1) * len(group2)
+        if b == expected_edges:
+            print(*sorted(group1))
         else:
-            print(*sorted(mas))
+            print(-1)
+    else:
+        print(-1)
 else:
     print(-1)
