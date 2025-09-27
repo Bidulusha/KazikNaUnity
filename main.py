@@ -1,27 +1,36 @@
-a = input()
-b = input()
+#include <iostream>
+#include <string>
+#include <vector>
 
-d = {}
+using namespace std;
 
-for i in b:
-    if i in d:
-        d[i] += 1
-    else:
-        d[i] = 1
-
-
-for i in range(len(a) - len(b) + 1):
-    t = d.copy()
-    for j in range(len(b)):
-        if(a[i + j] in t and t[a[i + j]] - 1 > -1):
-            t[a[i + j]] -= 1
-        else:
-            break
-    else:
-        print(i + 1)
-        break
-else:
-    print(0)
-
-
-
+int main() {
+    string a, b;
+    cin >> a >> b;
+    
+    vector<int> pattern(128, 0);
+    for (char c : b) {
+        pattern[c]++;
+    }
+    
+    for (size_t i = 0; i <= a.length() - b.length(); i++) {
+        vector<int> temp = pattern;
+        bool found = true;
+        
+        for (size_t j = 0; j < b.length(); j++) {
+            char c = a[i + j];
+            if (temp[c]-- <= 0) {
+                found = false;
+                break;
+            }
+        }
+        
+        if (found) {
+            cout << i + 1 << endl;
+            return 0;
+        }
+    }
+    
+    cout << 0 << endl;
+    return 0;
+}
