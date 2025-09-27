@@ -1,77 +1,72 @@
 a, b = map(int, input().split())
 
-edges = [[] for _ in range(a + 1)]
+# Создаём матрицу смежности (a x a), изначально заполненную нулями
+matrix = [[0] * (a + 1) for _ in range(a + 1)]
+
+# Заполняем матрицу рёбрами
 for i in range(b):
     x, y = map(int, input().split())
-    edges[x].append(y)
-    edges[y].append(x)
-
-# Преобразуем в множества для удобства
-for i in range(1, a + 1):
-    edges[i] = set(edges[i])
-
-# Пытаемся раскрасить граф в 2 цвета (проверка на двудольность)
-color = [0] * (a + 1)
-from collections import deque
+    matrix[x][y] = 1
+    matrix[y][x] = 1  # для неориентированного графа
 
 
-def is_bipartite(start):
-    q = deque([start])
-    color[start] = 1
-    part1, part2 = [], []
+# Пытаемся разделить на две доли
+# Для полного двудольного графа матрица должна иметь блочную структуру:
+# [ 0 B ]
+# [ B 0 ]
 
-    while q:
-        u = q.popleft()
-        if color[u] == 1:
-            part1.append(u)
-        else:
-            part2.append(u)
+def solve_with_matrix():
+    if a % 2 != 0:
+        return -1  # нечётное количество вершин - не может быть сбалансированным
 
-        for v in edges[u]:
-            if color[v] == 0:
-                color[v] = 3 - color[u]  # 1->2, 2->1
-                q.append(v)
-            elif color[v] == color[u]:
-                return False, [], []
+    n = a // 2  # размер каждой доли
 
-    return True, part1, part2
+    # Пробуем разные разбиения вершин на две группы
+    from itertools import combinations
+
+    # Перебираем все возможные первые доли размера n
+    for group1 in combinations(range(1, a + 1), n):
+        group1 = set(group1)
+        group2 = set(range(1, a + 1)) - group1
+
+        # Проверяем, что это полный двудольный граф
+        valid = True
+
+        # Проверяем рёбра внутри group1 - их не должно быть
+        for u in group1:
+            for v in group1:
+                if u != v and matrix[u][v] == 1:
+                    valid = False
+                    break
+            if not valid:
+                break
+
+        # Проверяем рёбра внутри group2 - их не должно быть
+        for u in group2:
+            for v in group2:
+                if u != v and matrix[u][v] == 1:
+                    valid = False
+                    break
+            if not valid:
+                break
+
+        # Проверяем рёбра между group1 и group2 - должны быть все
+        for u in group1:
+            for v in group2:
+                if matrix[u][v] == 0:
+                    valid = False
+                    break
+            if not valid:
+                break
+
+        if valid:
+            return sorted(group1)
+
+    return -1
 
 
-# Проверяем двудольность
-bipartite, part1, part2 = is_bipartite(1)
-
-# Если не все вершины посещены (граф несвязный)
-if len(part1) + len(part2) != a:
-    print(-1)
-elif not bipartite:
+result = solve_with_matrix()
+if result == -1:
     print(-1)
 else:
-    # Проверяем сбалансированность
-    if len(part1) != len(part2):
-        print(-1)
-    else:
-        # Проверяем полноту связей
-        n = len(part1)
-        expected_edges = n * n
-
-        if b != expected_edges:
-            print(-1)
-        else:
-            # Проверяем, что все возможные рёбра присутствуют
-            part1_set, part2_set = set(part1), set(part2)
-            valid = True
-
-            for u in part1:
-                if edges[u] != part2_set:
-                    valid = False
-                    break
-
-            for u in part2:
-                if edges[u] != part1_set:
-                    valid = False
-                    break
-
-            if valid:
-                print(*sorted(part1))
-            else:
-                print(-1)
+    print(*result)
