@@ -17,4 +17,7 @@ for i in d:
         break
 else:
     mas.add(c)
-    print(*sorted(mas))
+    if len(mas) != len(d[c]):
+        print(-1)
+    else:
+        print(*sorted(mas))
