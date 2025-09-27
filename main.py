@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include <vector>
 
 using namespace std;
 
@@ -8,18 +7,18 @@ int main() {
     string a, b;
     cin >> a >> b;
     
-    vector<int> pattern(128, 0);
+    int pattern[128] = {0};
     for (char c : b) {
         pattern[c]++;
     }
     
-    for (size_t i = 0; i <= a.length() - b.length(); i++) {
-        vector<int> temp = pattern;
+    for (size_t i = 0; i < a.length() - b.length() + 1; i++) {
         bool found = true;
         
+        int temp[128] = {0};
         for (size_t j = 0; j < b.length(); j++) {
             char c = a[i + j];
-            if (temp[c]-- <= 0) {
+            if (++temp[c] > pattern[c]) {
                 found = false;
                 break;
             }
