@@ -1,24 +1,27 @@
-d = {32: 36, 36: 37, 37: 38, 42:39, 43: 40, 45: 41, 46:42, 47:43, 58:44}
+a = input()
+b = input()
 
-s = input()
-mas = []
+d = {}
 
-def trans(a):
-    global d
-    if 47 < ord(a) and ord(a) < 58:
-        return(ord(a) - 48)
-
-    if 64 < ord(a) and ord(a) < 91:
-        return(ord(a) - 55)
-        
-    return (d[ord(a)])
+for i in b:
+    if i in d:
+        d[i] += 1
+    else:
+        d[i] = 1
 
 
-for i in range(1, len(s), +2):
-    mas.append('{0:011b}'.format(trans(s[i - 1].upper()) * 45 + trans(s[i].upper())))
+for i in range(len(a) - len(b) + 1):
+    t = d.copy()
+    for j in range(len(b)):
+        if(a[i + j] in t and t[a[i + j]] - 1 > -1):
+            t[a[i + j]] -= 1
+        else:
+            break
+    else:
+        print(i + 1)
+        break
+else:
+    print(0)
 
-if len(s) % 2 != 0:
-    mas.append('{0:06b}'.format(trans(s[-1].upper())))
 
 
-print(*mas,sep='')
